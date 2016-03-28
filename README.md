@@ -5,11 +5,12 @@
 [![License](https://img.shields.io/cocoapods/l/TwilioTest.svg?style=flat)](http://cocoapods.org/pods/TwilioTest)
 [![Platform](https://img.shields.io/cocoapods/p/TwilioTest.svg?style=flat)](http://cocoapods.org/pods/TwilioTest)
 
+## Description
+Twilio sometimes refuses to work due to particular network settings issues of an app user (typically WiFi router blocking something essential). This can be notoriously difficult to diagnose when you can't rely on technical savvy of the affected user. This project provides you with a way to build a Twilio diagnostics feature into your app, such that you will be able to intercept verbose logs of Twilio's attempt to establish a call.
+
 ## Usage
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
-
-## Requirements
 
 ## Installation
 
@@ -19,10 +20,6 @@ it, simply add the following line to your Podfile:
 ```ruby
 pod "TwilioTest"
 ```
-
-## Author
-
-alex-maltsev, alex.maltsev@gmail.com
 
 ## License
 
