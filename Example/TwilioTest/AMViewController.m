@@ -11,6 +11,14 @@
 
 @interface AMViewController ()
 
+@property (strong, nonatomic) TwilioTest *twilioTest;
+
+@property (weak, nonatomic) IBOutlet UIButton *startTestButton;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
+@property (weak, nonatomic) IBOutlet UITextView *logTextView;
+@property (weak, nonatomic) IBOutlet UIButton *emailLogButton;
+@property (weak, nonatomic) IBOutlet UILabel *successLabel;
+
 @end
 
 @implementation AMViewController
@@ -18,13 +26,73 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+	
+    // Init the test object
+    self.twilioTest = [[TwilioTest alloc] init];
+    
+    // Set up UI
+    self.logTextView.layer.cornerRadius = 4;
+    self.logTextView.layer.borderWidth = 1;
+    self.logTextView.layer.borderColor = [UIColor colorWithWhite:0.6 alpha:1].CGColor;
+    
+    [self resetUI];
 }
 
-- (void)didReceiveMemoryWarning
+
+- (void)resetUI
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    self.successLabel.hidden = YES;
+    self.emailLogButton.hidden = YES;
+    self.logTextView.text = @"";
 }
+
+
+- (IBAction)startTestPressed:(id)sender
+{
+    [self.indicator startAnimating];
+    self.startTestButton.enabled = NO;
+    [self resetUI];
+    
+    [self.twilioTest performTestWithCompletionHandler:^(NSData *logData, NSError *error) {
+        [self.indicator stopAnimating];
+        self.startTestButton.enabled = YES;
+        
+        if (error) {
+            // TODO: reflect error message
+            [self reflectSuccess:NO];
+        }
+        else {
+            [self reflectSuccess:YES];
+        }
+        
+        if (logData) {
+            NSString *logString = [[NSString alloc] initWithData:logData encoding:NSUTF8StringEncoding];
+            self.logTextView.text = logString;
+            self.emailLogButton.hidden = NO;
+        }
+    }];
+}
+
+
+- (void)reflectSuccess:(BOOL)success
+{
+    self.successLabel.hidden = NO;
+    
+    if (success) {
+        self.successLabel.text = @"Test Passed";
+        self.successLabel.textColor = [UIColor greenColor];
+    }
+    else {
+        self.successLabel.text = @"Test Failed";
+        self.successLabel.textColor = [UIColor redColor];
+    }
+}
+
+
+- (IBAction)emailLogPressed:(id)sender
+{
+}
+
+
 
 @end

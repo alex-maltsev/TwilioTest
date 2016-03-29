@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="whP-gf-Uak">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="gcP-IG-JoV">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Twilio Test Example-->
         <scene sceneID="wQg-tq-qST">
             <objects>
                 <viewController id="whP-gf-Uak" customClass="AMViewController" sceneMemberID="viewController">
@@ -14,12 +14,96 @@
                         <viewControllerLayoutGuide type="bottom" id="Mvr-aV-6Um"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="TpU-gO-2f1">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QYr-FK-lMp">
+                                <rect key="frame" x="97" y="86" width="126" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="07e-Xg-058"/>
+                                    <constraint firstAttribute="width" constant="126" id="NuC-VW-3ie"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <state key="normal" title="Start Test"/>
+                                <connections>
+                                    <action selector="startTestPressed:" destination="whP-gf-Uak" eventType="touchUpInside" id="irJ-D6-6tD"/>
+                                </connections>
+                            </button>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="SlB-5X-Set">
+                                <rect key="frame" x="8" y="156" width="304" height="350"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IGH-HU-yx9">
+                                <rect key="frame" x="97" y="523" width="126" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="4fj-6c-s9s"/>
+                                    <constraint firstAttribute="width" constant="126" id="C37-RF-ATj"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <state key="normal" title="Email Log"/>
+                                <connections>
+                                    <action selector="emailLogPressed:" destination="whP-gf-Uak" eventType="touchUpInside" id="bEr-aB-wBZ"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Test Passed" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kdJ-Qk-Ma5">
+                                <rect key="frame" x="116" y="126" width="88" height="20"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="ROs-Lt-ryQ">
+                                <rect key="frame" x="150" y="126" width="20" height="20"/>
+                                <color key="color" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                            </activityIndicatorView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="QYr-FK-lMp" firstAttribute="centerX" secondItem="TpU-gO-2f1" secondAttribute="centerX" id="1s5-5E-ER2"/>
+                            <constraint firstItem="ROs-Lt-ryQ" firstAttribute="centerY" secondItem="kdJ-Qk-Ma5" secondAttribute="centerY" id="9S4-SE-SZS"/>
+                            <constraint firstItem="IGH-HU-yx9" firstAttribute="top" secondItem="SlB-5X-Set" secondAttribute="bottom" constant="17" id="MGK-OI-15X"/>
+                            <constraint firstItem="Mvr-aV-6Um" firstAttribute="top" secondItem="IGH-HU-yx9" secondAttribute="bottom" constant="15" id="Rj1-Ey-Eze"/>
+                            <constraint firstItem="kdJ-Qk-Ma5" firstAttribute="centerX" secondItem="TpU-gO-2f1" secondAttribute="centerX" id="Ug1-UU-zX6"/>
+                            <constraint firstItem="SlB-5X-Set" firstAttribute="top" secondItem="kdJ-Qk-Ma5" secondAttribute="bottom" constant="10" id="cDm-1u-lMR"/>
+                            <constraint firstItem="IGH-HU-yx9" firstAttribute="centerX" secondItem="TpU-gO-2f1" secondAttribute="centerX" id="dEk-yb-1rP"/>
+                            <constraint firstAttribute="trailing" secondItem="SlB-5X-Set" secondAttribute="trailing" constant="8" id="hiD-Km-9Bd"/>
+                            <constraint firstItem="SlB-5X-Set" firstAttribute="leading" secondItem="TpU-gO-2f1" secondAttribute="leading" constant="8" id="l9S-vK-JJM"/>
+                            <constraint firstItem="ROs-Lt-ryQ" firstAttribute="centerX" secondItem="kdJ-Qk-Ma5" secondAttribute="centerX" id="nZR-bi-7qz"/>
+                            <constraint firstItem="kdJ-Qk-Ma5" firstAttribute="top" secondItem="QYr-FK-lMp" secondAttribute="bottom" constant="10" id="rIZ-sn-zoV"/>
+                            <constraint firstItem="QYr-FK-lMp" firstAttribute="top" secondItem="uEw-UM-LJ8" secondAttribute="bottom" constant="22" id="y3L-Ja-Fqw"/>
+                        </constraints>
                     </view>
+                    <navigationItem key="navigationItem" title="Twilio Test Example" id="hH6-Lr-eXs"/>
+                    <connections>
+                        <outlet property="emailLogButton" destination="IGH-HU-yx9" id="flP-1I-kMO"/>
+                        <outlet property="indicator" destination="ROs-Lt-ryQ" id="Ayz-nr-HbZ"/>
+                        <outlet property="logTextView" destination="SlB-5X-Set" id="RWQ-UG-v0q"/>
+                        <outlet property="startTestButton" destination="QYr-FK-lMp" id="upf-uw-8dY"/>
+                        <outlet property="successLabel" destination="kdJ-Qk-Ma5" id="V63-wO-4gu"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tc2-Qw-aMS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="865" y="433"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="NKa-PN-7ej">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="gcP-IG-JoV" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="aYG-KP-8fv">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="whP-gf-Uak" kind="relationship" relationship="rootViewController" id="cHx-fh-tsv"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="k9u-9w-obb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="305" y="433"/>
         </scene>

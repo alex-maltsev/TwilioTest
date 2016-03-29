@@ -11,6 +11,7 @@
 @interface TwilioTest : NSObject
 
 @property (nonatomic, strong) NSString *errorMessage;
-@property (nonatomic) BOOL completedSuccessfully;
+
+- (void)performTestWithCompletionHandler:(void (^)(NSData *logData, NSError *error))handler;
 
 @end
