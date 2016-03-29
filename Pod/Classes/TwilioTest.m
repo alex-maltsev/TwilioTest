@@ -33,6 +33,8 @@
     // Prevent re-entry while test is in progress
     if (self.testIsInProgress) return;
     
+    self.testIsInProgress = YES;
+    
     self.completionHandler = handler;
 
     // Doing some cleanup, to handle multiple calls to this function
@@ -52,11 +54,11 @@
 
 - (void)pageFetchTimedOut
 {
-    [self finishTestWithErrorMessage:@"Unable to fetch Twilio test page. Request timed out."];
+    [self finishTestWithError:[self makeErrorWithCode:TwilioTestPageFetchTimedOut]];
 }
 
 
-- (void)finishTestWithErrorMessage:(NSString *)errorMessage
+- (void)finishTestWithError:(NSError *)error
 {
     if (timeoutTimer) {
         [timeoutTimer invalidate];
@@ -75,17 +77,11 @@
         logData = [NSData dataWithContentsOfFile:self.logFilePath];
     }
     
-    self.errorMessage = errorMessage;
     self.testIsInProgress = NO;
     
+    // Calling completion handler on the UI thread
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (errorMessage) {
-            NSError *error = [NSError errorWithDomain:@"TwilioTest" code:1 userInfo:nil]; // TODO: set message
-            self.completionHandler(logData, error);
-        }
-        else {
-            self.completionHandler(logData, nil);
-        }
+        self.completionHandler(logData, error);
     });
 }
 
@@ -95,20 +91,20 @@
     NSData *pageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://clientsupport.twilio.com"]];
     
     // Handle the situation of timeout while fetching the page
-    if (self.errorMessage) return;
+    if (!self.testIsInProgress) return;
     
     [timeoutTimer invalidate];
     timeoutTimer = nil;
     
     if (pageData == nil) {
-        [self finishTestWithErrorMessage:@"Unable to fetch Twilio test page"];
+        [self finishTestWithError:[self makeErrorWithCode:TwilioTestPageFetchFailed]];
         return;
     }
     
     // Trying to get the capability token out of the page
     NSString *token = [self twilioTokenFromPageData:pageData];
     if (token == nil) {
-        [self finishTestWithErrorMessage:@"Unable to obtain token from test page"];
+        [self finishTestWithError:[self makeErrorWithCode:TwilioTestNoTokenFound]];
         return;
     }
     
@@ -158,7 +154,7 @@
 
 - (void)connectionTimedOut
 {
-    [self finishTestWithErrorMessage:@"Connection attempt timed out"];
+    [self finishTestWithError:[self makeErrorWithCode:TwilioTestConnectionTimedOut]];
 }
 
 
@@ -193,13 +189,60 @@
 
 - (void)connectionDidConnect:(TCConnection *)connection
 {
-    [self finishTestWithErrorMessage:nil];
+    [self finishTestWithError:nil];
 }
 
 
 - (void)connection:(TCConnection *)connection didFailWithError:(NSError *)error
 {
-    [self finishTestWithErrorMessage:[NSString stringWithFormat:@"Connection failed with error: %@", error.localizedDescription]];
+    [self finishTestWithError:[self makeErrorWithCode:TwilioTestConnectionFailed andExtraError:error]];
+}
+
+
+#pragma mark - Preparing specific errors
+
+- (NSError *)makeErrorWithCode:(TwilioTestError)errorCode
+{
+    return [self makeErrorWithCode:errorCode andExtraError:nil];
+}
+
+
+- (NSError *)makeErrorWithCode:(TwilioTestError)errorCode andExtraError:(NSError *)extraError
+{
+    NSString *description;
+    
+    switch (errorCode) {
+        case TwilioTestPageFetchTimedOut:
+            description = @"Attempt to fetch Twilio test page timed out";
+            break;
+            
+        case TwilioTestPageFetchFailed:
+            description = @"Unable to fetch Twilio test page";
+            break;
+
+        case TwilioTestNoTokenFound:
+            description = @"Unable to obtain token from Twilio test page";
+            break;
+
+        case TwilioTestConnectionTimedOut:
+            description = @"Connection attempt timed out";
+            break;
+
+        case TwilioTestConnectionFailed:
+            description = @"Connection failed with error";
+            break;
+            
+        default:
+            return nil;
+    }
+    
+    if (extraError) {
+        description = [NSString stringWithFormat:@"%@: %@", description, extraError.localizedDescription];
+    }
+    
+    return [NSError errorWithDomain:TwilioTestErrorDomain
+                               code:errorCode
+                           userInfo:@{ NSLocalizedDescriptionKey : description }];
 }
 
 @end

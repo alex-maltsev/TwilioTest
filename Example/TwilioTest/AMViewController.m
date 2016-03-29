@@ -63,6 +63,7 @@
         
         if (error) {
             // TODO: reflect error message
+            NSLog(@"TwilioTest failed with error: %@", error.localizedDescription);
             [self reflectSuccess:NO];
         }
         else {

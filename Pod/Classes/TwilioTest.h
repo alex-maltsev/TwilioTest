@@ -8,9 +8,18 @@
 
 #import <Foundation/Foundation.h>
 
-@interface TwilioTest : NSObject
+static NSString * const TwilioTestErrorDomain = @"TwilioTestErrorDomain";
 
-@property (nonatomic, strong) NSString *errorMessage;
+typedef enum {
+    TwilioTestPageFetchTimedOut = 100, // Timed out while trying to fetch Twilio's test page
+    TwilioTestPageFetchFailed, // Fetching of Twilio's test page failed for some reason
+    TwilioTestNoTokenFound, // Fetched the Twilio's test page, but failed to extract capability token from it
+    TwilioTestConnectionTimedOut, // Attempt to establish Twilio call timed out
+    TwilioTestConnectionFailed // Attempt to establish Twilio call failed for some reason
+} TwilioTestError;
+
+
+@interface TwilioTest : NSObject
 
 - (void)performTestWithCompletionHandler:(void (^)(NSData *logData, NSError *error))handler;
 
