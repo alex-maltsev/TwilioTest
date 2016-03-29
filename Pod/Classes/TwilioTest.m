@@ -225,11 +225,11 @@
             break;
 
         case TwilioTestConnectionTimedOut:
-            description = @"Connection attempt timed out";
+            description = @"Twilio connection attempt timed out";
             break;
 
         case TwilioTestConnectionFailed:
-            description = @"Connection failed with error";
+            description = @"Twilio connection failed with error";
             break;
             
         default:

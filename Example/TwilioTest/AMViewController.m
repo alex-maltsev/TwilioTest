@@ -14,12 +14,14 @@
 
 @property (strong, nonatomic) TwilioTest *twilioTest;
 @property (strong, nonatomic) NSData *logData;
+@property (strong, nonatomic) NSError *testError;
 
 @property (weak, nonatomic) IBOutlet UIButton *startTestButton;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
 @property (weak, nonatomic) IBOutlet UITextView *logTextView;
-@property (weak, nonatomic) IBOutlet UIButton *emailLogButton;
+@property (weak, nonatomic) IBOutlet UIButton *emailResultsButton;
 @property (weak, nonatomic) IBOutlet UILabel *successLabel;
+@property (weak, nonatomic) IBOutlet UILabel *errorMessageLabel;
 
 @end
 
@@ -44,8 +46,9 @@
 - (void)resetUI
 {
     self.successLabel.hidden = YES;
-    self.emailLogButton.hidden = YES;
-    self.logTextView.text = @"";
+    self.emailResultsButton.hidden = YES;
+    self.errorMessageLabel.hidden = YES;
+    self.logTextView.text = @"Captured console log will appear here";
 }
 
 
@@ -58,12 +61,13 @@
     [self.twilioTest performTestWithCompletionHandler:^(NSData *logData, NSError *error) {
         [self.indicator stopAnimating];
         self.startTestButton.enabled = YES;
-        self.emailLogButton.hidden = NO;
+        self.emailResultsButton.hidden = NO;
         self.logData = logData;
+        self.testError = error;
         
         if (error) {
-            // TODO: reflect error message
-            NSLog(@"TwilioTest failed with error: %@", error.localizedDescription);
+            self.errorMessageLabel.hidden = NO;
+            self.errorMessageLabel.text = error.localizedDescription;
             [self reflectSuccess:NO];
         }
         else {
@@ -73,6 +77,9 @@
         if (logData.length > 0) {
             NSString *logString = [[NSString alloc] initWithData:logData encoding:NSUTF8StringEncoding];
             self.logTextView.text = logString;
+        }
+        else {
+            self.logTextView.text = @"Console log was not captured";
         }
     }];
 }
@@ -93,7 +100,7 @@
 }
 
 
-- (IBAction)emailLogPressed:(id)sender
+- (IBAction)emailResultsPressed:(id)sender
 {
     // Make sure that we can send emails
     if(![MFMailComposeViewController canSendMail]) {
@@ -115,15 +122,26 @@
     [mc setSubject:@"Twilio test report"];
     [mc setToRecipients:recipents];
     
+    // Create email body, reflecting whether the test passed and whether log was captured
+    NSMutableString *message = [NSMutableString string];
+    if (self.testError) {
+        [message appendFormat:@"Test failed. %@", self.testError.localizedDescription];
+    }
+    else {
+        [message appendString:@"Test passed"];
+    }
+    
     if (self.logData.length > 0) {
-        [mc setMessageBody:@"See console log attached" isHTML:NO];
+        [message appendString:@"\n\nSee console log attached"];
         // Set log file as attachment
         [mc addAttachmentData:self.logData mimeType:@"text/plain" fileName:@"twilio_test.log"];
     }
     else {
-        [mc setMessageBody:@"Console log was not captured" isHTML:NO];
+        [message appendString:@"\n\nConsole log was not captured"];
     }
-    
+
+    [mc setMessageBody:message isHTML:NO];
+
     [self presentViewController:mc animated:YES completion:NULL];
 }
 
