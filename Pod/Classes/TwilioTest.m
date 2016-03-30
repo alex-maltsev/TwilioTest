@@ -28,6 +28,19 @@
 
 @implementation TwilioTest
 
+- (instancetype)init
+{
+    self = [super init];
+    
+    if (self) {
+        self.testPageFetchTimeout = 4.0;
+        self.connectionAttemptTimeout = 60.0;
+    }
+    
+    return self;
+}
+
+
 - (void)performTestWithCompletionHandler:(void (^)(NSData *logData, NSError *error))handler
 {
     // Prevent re-entry while test is in progress
@@ -44,7 +57,7 @@
     
     [self performSelectorInBackground:@selector(fetchTwilioTestPage) withObject:nil];
     
-    timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:4
+    timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:self.testPageFetchTimeout
                                                     target:self
                                                   selector:@selector(pageFetchTimedOut)
                                                   userInfo:nil
@@ -144,7 +157,7 @@
     twilioDevice = [[TCDevice alloc] initWithCapabilityToken:token delegate:nil];
     twilioConnection = [twilioDevice connect:@{} delegate:self];
     
-    timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:60
+    timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:self.connectionAttemptTimeout
                                                     target:self
                                                   selector:@selector(connectionTimedOut)
                                                   userInfo:nil

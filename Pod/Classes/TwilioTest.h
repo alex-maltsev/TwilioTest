@@ -21,6 +21,14 @@ typedef enum {
 
 @interface TwilioTest : NSObject
 
+// The amount of time after which the attempt to fetch the Twilio test page (http://clientsupport.twilio.com)
+// is considered timed out (seconds). Defaults to 4.
+@property (nonatomic) NSTimeInterval testPageFetchTimeout;
+
+// The ammount of time after which the attempt to establish Twilio connection
+// is considered timed out (seconds). Defaults to 60.
+@property (nonatomic) NSTimeInterval connectionAttemptTimeout;
+
 - (void)performTestWithCompletionHandler:(void (^)(NSData *logData, NSError *error))handler;
 
 @end
