@@ -21,6 +21,24 @@ it, simply add the following line to your Podfile:
 pod "TwilioTest"
 ```
 
+TwilioTest grabs the Twilio capability token from the Twilio test page http://clientsupport.twilio.com. Since that page is served over HTTP, you will need to set up a security exception for TwilioTest to work on iOS 9. You can achieve that by adding the following into your Info.plist file:
+
+```xml
+<key>NSAppTransportSecurity</key>
+<dict>
+	<key>NSExceptionDomains</key>
+	<dict>
+		<key>twilio.com</key>
+		<dict>
+			<key>NSIncludesSubdomains</key>
+			<true/>
+			<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+			<true/>
+		</dict>
+	</dict>
+</dict>
+```
+
 ## License
 
 TwilioTest is available under the MIT license. See the LICENSE file for more info.
