@@ -70,7 +70,14 @@ Since the Twilio test page is served over HTTP, you will need to set up a securi
 
 ### Test with your capability token
 
+If you'd rather use your own capability token and connection parameters, you can call the following method instead:
 
+```objectivec
+- (void)performTestWithCapabilityToken:(NSString *)token
+                            parameters:(NSDictionary *)parameters
+                     completionHandler:(void (^)(NSData *logData, NSError *error))handler;
+```
+Here 'parameters' is the dictionary you would normally pass to `TCDevice connect` function, and can be nil.
 
 ## License
 
