@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "TwilioTest"
-  s.version          = "0.1.0"
+  s.version          = "0.1.1"
   s.summary          = "Utility class for diagnosing Twilio connectivity problems"
 
   s.description      = <<-DESC
@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.author           = { "alex-maltsev" => "alex.maltsev@gmail.com" }
   s.source           = { :git => "https://github.com/alex-maltsev/TwilioTest.git", :tag => s.version.to_s }
 
-  s.platform     = :ios, '8.1'
+  s.platform     = :ios, '7.0'
   s.requires_arc = true
 
   s.source_files = 'Pod/Classes/**/*'
