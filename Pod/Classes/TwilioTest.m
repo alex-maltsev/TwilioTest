@@ -50,10 +50,7 @@
     
     self.completionHandler = handler;
 
-    // Doing some cleanup, to handle multiple calls to this function
-    self.logFilePath = nil;
-    self.logFilePointer = nil;
-    self.twilioCallAttempted = NO;
+    [self cleanUpForTest];
     
     [self performSelectorInBackground:@selector(fetchTwilioTestPage) withObject:nil];
     
@@ -62,6 +59,31 @@
                                                   selector:@selector(pageFetchTimedOut)
                                                   userInfo:nil
                                                    repeats:NO];
+}
+
+
+- (void)performTestWithCapabilityToken:(NSString *)token
+                            parameters:(NSDictionary *)parameters
+                     completionHandler:(void (^)(NSData *logData, NSError *error))handler
+{
+    // Prevent re-entry while test is in progress
+    if (self.testIsInProgress) return;
+    
+    self.testIsInProgress = YES;
+    
+    self.completionHandler = handler;
+
+    [self cleanUpForTest];
+    
+    [self startConnectionWithToken:token parameters:parameters];
+}
+
+
+- (void)cleanUpForTest
+{
+    self.logFilePath = nil;
+    self.logFilePointer = nil;
+    self.twilioCallAttempted = NO;
 }
 
 
@@ -122,7 +144,7 @@
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self startConnectionWithToken:token];
+        [self startConnectionWithToken:token parameters:@{}];
     });
 }
 
@@ -146,16 +168,18 @@
 }
 
 
-- (void)startConnectionWithToken:(NSString *)token
+- (void)startConnectionWithToken:(NSString *)token parameters:(NSDictionary *)parameters
 {
     self.twilioCallAttempted = YES;
+    
+    if (parameters == nil) parameters = @{};
     
     [self redirectConsoleLogToFile];
     
     [[TwilioClient sharedInstance] setLogLevel:TC_LOG_DEBUG];
     
     twilioDevice = [[TCDevice alloc] initWithCapabilityToken:token delegate:nil];
-    twilioConnection = [twilioDevice connect:@{} delegate:self];
+    twilioConnection = [twilioDevice connect:parameters delegate:self];
     
     timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:self.connectionAttemptTimeout
                                                     target:self

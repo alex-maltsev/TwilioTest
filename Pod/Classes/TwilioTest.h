@@ -29,6 +29,12 @@ typedef enum {
 // is considered timed out (seconds). Defaults to 60.
 @property (nonatomic) NSTimeInterval connectionAttemptTimeout;
 
+// Test Twilio connection using capability token obtained from the Twilio test page
 - (void)performTestWithCompletionHandler:(void (^)(NSData *logData, NSError *error))handler;
+
+// Test Twilio connection using the provided capability token and connection parameters
+- (void)performTestWithCapabilityToken:(NSString *)token
+                            parameters:(NSDictionary *)parameters
+                     completionHandler:(void (^)(NSData *logData, NSError *error))handler;
 
 @end
