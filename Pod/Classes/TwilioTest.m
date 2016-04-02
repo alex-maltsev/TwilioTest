@@ -10,11 +10,10 @@
 #import <TwilioSDK/TwilioClient.h>
 
 @interface TwilioTest() <TCConnectionDelegate>
-{
-    TCDevice *twilioDevice;
-    TCConnection *twilioConnection;
-    NSTimer *timeoutTimer;
-}
+
+@property (nonatomic) TCDevice *twilioDevice;
+@property (nonatomic) TCConnection *twilioConnection;
+@property (nonatomic) NSTimer *timeoutTimer;
 
 @property (nonatomic) void (^completionHandler)(NSData *logData, NSError *error);
 @property (nonatomic) BOOL testIsInProgress;
@@ -83,9 +82,9 @@
 
 - (void)finishTestWithError:(NSError *)error
 {
-    if (timeoutTimer) {
-        [timeoutTimer invalidate];
-        timeoutTimer = nil;
+    if (self.timeoutTimer) {
+        [self.timeoutTimer invalidate];
+        self.timeoutTimer = nil;
     }
     
     NSData *logData;
@@ -95,7 +94,7 @@
         [self stopRedirectingConsoleLogToFile];
         
         [[TwilioClient sharedInstance] setLogLevel:TC_LOG_WARN];
-        [twilioConnection disconnect];
+        [self.twilioConnection disconnect];
         
         logData = [NSData dataWithContentsOfFile:self.logFilePath];
     }
@@ -171,14 +170,14 @@
     
     [[TwilioClient sharedInstance] setLogLevel:TC_LOG_DEBUG];
     
-    twilioDevice = [[TCDevice alloc] initWithCapabilityToken:token delegate:nil];
-    twilioConnection = [twilioDevice connect:parameters delegate:self];
+    self.twilioDevice = [[TCDevice alloc] initWithCapabilityToken:token delegate:nil];
+    self.twilioConnection = [self.twilioDevice connect:parameters delegate:self];
     
-    timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:self.connectionAttemptTimeout
-                                                    target:self
-                                                  selector:@selector(connectionTimedOut)
-                                                  userInfo:nil
-                                                   repeats:NO];
+    self.timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:self.connectionAttemptTimeout
+                                                         target:self
+                                                       selector:@selector(connectionTimedOut)
+                                                       userInfo:nil
+                                                        repeats:NO];
 }
 
 
