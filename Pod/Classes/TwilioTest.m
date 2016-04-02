@@ -52,13 +52,7 @@
 
     [self cleanUpForTest];
     
-    [self performSelectorInBackground:@selector(fetchTwilioTestPage) withObject:nil];
-    
-    timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:self.testPageFetchTimeout
-                                                    target:self
-                                                  selector:@selector(pageFetchTimedOut)
-                                                  userInfo:nil
-                                                   repeats:NO];
+    [self fetchTwilioTestPage];
 }
 
 
@@ -84,12 +78,6 @@
     self.logFilePath = nil;
     self.logFilePointer = nil;
     self.twilioCallAttempted = NO;
-}
-
-
-- (void)pageFetchTimedOut
-{
-    [self finishTestWithError:[self makeErrorWithCode:TwilioTestPageFetchTimedOut]];
 }
 
 
@@ -123,29 +111,34 @@
 
 - (void)fetchTwilioTestPage
 {
-    NSData *pageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://clientsupport.twilio.com"]];
-    
-    // Handle the situation of timeout while fetching the page
-    if (!self.testIsInProgress) return;
-    
-    [timeoutTimer invalidate];
-    timeoutTimer = nil;
-    
-    if (pageData == nil) {
-        [self finishTestWithError:[self makeErrorWithCode:TwilioTestPageFetchFailed]];
-        return;
-    }
-    
-    // Trying to get the capability token out of the page
-    NSString *token = [self twilioTokenFromPageData:pageData];
-    if (token == nil) {
-        [self finishTestWithError:[self makeErrorWithCode:TwilioTestNoTokenFound]];
-        return;
-    }
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self startConnectionWithToken:token parameters:@{}];
-    });
+    NSURL *url = [NSURL URLWithString:@"http://clientsupport.twilio.com"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:self.testPageFetchTimeout];
+    [request setHTTPMethod:@"GET"];
+
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+                               
+                               if (connectionError) {
+                                   [self finishTestWithError:[self makeErrorWithCode:TwilioTestPageFetchFailed andExtraError:connectionError]];
+                                   return;
+                               }
+                               
+                               NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+                               if (data == nil || httpResponse.statusCode != 200) {
+                                   [self finishTestWithError:[self makeErrorWithCode:TwilioTestPageFetchFailed]];
+                                   return;
+                               }
+                               
+                               // Trying to get the capability token out of the page
+                               NSString *token = [self twilioTokenFromPageData:data];
+                               if (token == nil) {
+                                   [self finishTestWithError:[self makeErrorWithCode:TwilioTestNoTokenFound]];
+                                   return;
+                               }
+                               
+                               [self startConnectionWithToken:token parameters:@{}];
+                           }];
 }
 
 
@@ -249,10 +242,6 @@
     NSString *description;
     
     switch (errorCode) {
-        case TwilioTestPageFetchTimedOut:
-            description = @"Attempt to fetch Twilio test page timed out";
-            break;
-            
         case TwilioTestPageFetchFailed:
             description = @"Unable to fetch Twilio test page";
             break;
