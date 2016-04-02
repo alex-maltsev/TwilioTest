@@ -111,8 +111,7 @@
 - (void)fetchTwilioTestPage
 {
     NSURL *url = [NSURL URLWithString:@"http://clientsupport.twilio.com"];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:self.testPageFetchTimeout];
-    [request setHTTPMethod:@"GET"];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:self.testPageFetchTimeout];
 
     [NSURLConnection sendAsynchronousRequest:request
                                        queue:[NSOperationQueue mainQueue]
